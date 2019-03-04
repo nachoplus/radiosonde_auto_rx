@@ -208,8 +208,10 @@ class SondeDecoder(object):
             # rtl_fm -p 0 -g -1 -M fm -F9 -s 15k -f 405500000 | sox -t raw -r 15k -e s -b 16 -c 1 - -r 48000 -b 8 -t wav - lowpass 2600 2>/dev/null | ./rs41ecc --crc --ecc --ptu
             # Note: Have removed a 'highpass 20' filter from the sox line, will need to re-evaluate if adding that is useful in the future.
             decode_cmd = "%s %s-p %d -d %s %s-M fm -F9 -s 15k -f %d 2>/dev/null |" % (self.sdr_fm, bias_option, int(self.ppm), str(self.device_idx), gain_param, self.sonde_freq)
+            decode_cmd += " tee sonde_raw.wav |"
             decode_cmd += "sox -t raw -r 15k -e s -b 16 -c 1 - -r 48000 -b 8 -t wav - lowpass 2600 2>/dev/null |"
-            decode_cmd += "./rs41ecc --crc --ecc --ptu --json 2>/dev/null"
+            decode_cmd += "./rs41ptu --crc --ecc --ptu --json 2>/dev/null"
+            #decode_cmd += "./rs41ecc --crc --ecc --ptu --json 2>/dev/null"
 
         elif self.sonde_type == "RS92":
             # Decoding a RS92 requires either an ephemeris or an almanac file.
